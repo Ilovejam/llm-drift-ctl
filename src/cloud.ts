@@ -24,11 +24,11 @@ export async function verifyLicense(
   const endpoint = config.cloudEndpoint || "https://llm-drift-ctl-cloud.fly.dev";
   const apiKey = config.apiKey;
 
-  if (!apiKey) {
-    // FORMAT mode can work offline
+  // FREE tier: FORMAT mode works offline, no API key needed
+  if (!apiKey || apiKey === "free") {
     return {
       valid: true,
-      plan: "offline",
+      plan: "free",
       features: ["FORMAT"]
     };
   }

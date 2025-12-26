@@ -40,6 +40,74 @@ npm install llm-drift-ctl
 pip install llm-drift-ctl
 ```
 
+## Pricing & Plans
+
+### 🆓 FREE Plan (No API Key Required)
+
+**Perfect for getting started!**
+
+- ✅ **FORMAT mode** - Fully offline, LLM-free
+- ✅ JSON validation & structure checks
+- ✅ No API key needed
+- ✅ No usage limits
+- ✅ Works completely offline
+
+```typescript
+// FREE - No API key needed
+const guard = new DriftGuard({
+  pipelineId: "my-pipeline"
+  // No apiKey = FREE plan, FORMAT mode only
+});
+
+await guard.check({ json: {...}, mode: "FORMAT" });
+```
+
+### 🚀 PRO Plan (Requires License Key)
+
+**For production content validation!**
+
+- ✅ Everything in FREE plan
+- ✅ **CONTENT mode** - LLM-based drift detection
+- ✅ **CALIBRATION mode** - Advanced scoring
+- ✅ Baseline comparison with semantic analysis
+- ⚠️ You provide your own OpenAI API key (we never store it)
+- ⚠️ You provide your own prompts and requirements
+
+```typescript
+// PRO - Requires license key + YOUR OpenAI API key
+const guard = new DriftGuard({
+  pipelineId: "my-pipeline",
+  llm: new OpenAIAdapter({
+    apiKey: process.env.OPENAI_API_KEY // YOUR OpenAI key
+  }),
+  apiKey: "your-llm-drift-ctl-license-key", // PRO license key
+  cloudEndpoint: "https://llm-drift-ctl-cloud.fly.dev",
+  contentRequirements: "Your custom requirements and prompts..."
+});
+```
+
+**Important Notes:**
+- **FREE plan**: No API key needed, works offline
+- **PRO plan**: Requires llm-drift-ctl license key (separate from OpenAI)
+- **OpenAI costs**: You pay OpenAI directly for your API usage
+- **We never store**: Your OpenAI API keys are never stored or managed by us
+
+## Pricing & Plans
+
+### 🆓 FREE Plan
+- ✅ FORMAT mode (offline, no API key needed)
+- ✅ JSON validation & structure checks
+- ✅ Works completely offline
+- ✅ No usage limits
+
+### 🚀 PRO Plan
+- ✅ Everything in FREE
+- ✅ CONTENT mode (LLM-based drift detection)
+- ✅ Requires license key + your own OpenAI API key
+- ✅ You provide your own prompts and requirements
+
+[See full pricing details →](PRICING.md)
+
 ## Quick Start
 
 ### Node.js / TypeScript
@@ -71,22 +139,21 @@ console.log(result);
 
 #### CONTENT Mode (requires your LLM)
 
-```typescript
-import { DriftGuard, UserLLM } from "llm-drift-ctl";
+**⚠️ Important: You must provide your own OpenAI API key. llm-drift-ctl never stores or manages API keys.**
 
-// Implement your LLM adapter
-class MyLLM implements UserLLM {
-  async generate(input: { prompt: string; text?: string; json?: object }) {
-    // Call OpenAI, Gemini, Claude, or your custom LLM
-    // You provide your own API key
-    return "response from your LLM";
-  }
-}
+```typescript
+import { DriftGuard, OpenAIAdapter } from "llm-drift-ctl";
+
+// Use OpenAI adapter with YOUR API key
+const openaiAdapter = new OpenAIAdapter({
+  apiKey: process.env.OPENAI_API_KEY, // ⚠️ YOUR OpenAI API key (required)
+  model: "gpt-4o-mini" // Optional, defaults to gpt-4o-mini
+});
 
 const guard = new DriftGuard({
   pipelineId: "my-pipeline",
-  llm: new MyLLM(),
-  apiKey: "your-license-key" // for cloud license verification
+  llm: openaiAdapter,
+  apiKey: "your-license-key" // llm-drift-ctl cloud license key (different from OpenAI)
 });
 
 // Accept a baseline (approved output)
@@ -173,13 +240,20 @@ No LLM needed. Checks:
 
 This mode works **fully offline**.
 
-### MODE 2 — CONTENT / CALIBRATION (User LLM required)
+### MODE 2 — CONTENT / CALIBRATION (PRO Plan + Your LLM)
 
-For content validation:
-- You supply your own LLM (OpenAI, Gemini, Claude, or custom)
-- You provide your own API key
+For content validation (requires PRO plan):
+- **You supply your own LLM** (OpenAI, Gemini, Claude, or custom)
+- **You provide your own OpenAI API key** - llm-drift-ctl never stores or manages your API keys
+- **You provide your own prompts and requirements** - Full control over validation logic
 - `llm-drift-ctl` compares outputs against approved baselines
-- Detects drift from baseline behavior
+- Detects drift from baseline behavior using semantic analysis
+
+**⚠️ Important:** 
+- CONTENT mode requires **PRO plan** (license key)
+- You need **your own OpenAI API key** (costs go to your OpenAI account)
+- You define **your own prompts and requirements** (full customization)
+- The `llm-drift-ctl` license key is separate from your OpenAI API key
 
 ## API Reference
 
@@ -286,4 +360,26 @@ This is a **control system**, not an AI system.
 ## License
 
 MIT
+
+
+## Environment Setup
+
+### Local Development
+
+1. Copy environment example files:
+   ```bash
+   cp .env.example .env  # Main repo
+   cp llm-drift-ctl-cloud/.env.example llm-drift-ctl-cloud/.env  # Cloud API
+   ```
+
+2. Fill in your API keys in `.env` files
+3. **Never commit `.env` files** - they're in `.gitignore`
+
+### Required Variables
+
+**For CONTENT mode:**
+- `OPENAI_API_KEY` - Your OpenAI API key (get from https://platform.openai.com/api-keys)
+
+**For PRO plan:**
+- `LLM_DRIFT_CTL_API_KEY` - llm-drift-ctl PRO license key
 

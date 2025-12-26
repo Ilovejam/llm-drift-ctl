@@ -11,15 +11,29 @@ app.get("/health", async () => {
 app.post("/license/verify", async (req, reply) => {
   const { apiKey } = req.body as any;
   
-  if (!apiKey || apiKey !== process.env.MASTER_KEY) {
+  if (!apiKey) {
     return reply.status(401).send({ valid: false });
   }
   
-  return {
-    valid: true,
-    plan: "pro",
-    features: ["FORMAT", "CONTENT", "CALIBRATION"]
-  };
+  // FREE tier: No API key needed (FORMAT mode only)
+  if (apiKey === "free" || !apiKey) {
+    return {
+      valid: true,
+      plan: "free",
+      features: ["FORMAT"]
+    };
+  }
+  
+  // PRO tier: Valid master key required
+  if (apiKey === process.env.MASTER_KEY || apiKey === process.env.PRO_MASTER_KEY) {
+    return {
+      valid: true,
+      plan: "pro",
+      features: ["FORMAT", "CONTENT", "CALIBRATION"]
+    };
+  }
+  
+  return reply.status(401).send({ valid: false });
 });
 
 // Start server

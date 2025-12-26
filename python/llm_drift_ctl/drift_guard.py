@@ -18,8 +18,9 @@ from .types import (
     DriftLocation
 )
 from .format import check_json_format, parse_and_validate_json, FormatCheckResult
-from .baseline import baseline_store, generate_semantic_fingerprint, normalize_output
+from .baseline import baseline_store, normalize_output
 from .cloud import verify_license
+from .content import check_content_drift
 from datetime import datetime
 import time
 
@@ -98,7 +99,7 @@ class DriftGuard:
             content_result = await self._check_content(json_data, text)
             if "CONTENT" in modes:
                 result.scores["semantic"] = content_result["semantic"]
-            if "CALIBRATION" in modes:
+            if "CALIBRATION" in modes or "CONTENT" in modes:
                 result.scores["calibration"] = content_result["calibration"]
             
             # Update decision based on content checks
@@ -173,19 +174,20 @@ class DriftGuard:
                 "warn": True
             }
         
-        # For MVP: simple comparison
-        # In production, this would use semantic similarity and score profile comparison
-        current_fingerprint = generate_semantic_fingerprint(json_data or text or "")
-        baseline_fingerprint = baseline.semantic_fingerprint
-        
-        semantic = 1.0 if current_fingerprint == baseline_fingerprint else 0.5
-        calibration = 0.8  # Placeholder for MVP
+        # Use LLM to check content drift
+        current_output = json_data or text or ""
+        result = await check_content_drift(
+            llm,
+            baseline,
+            current_output,
+            self.config.content_requirements  # Optional requirements/conditions
+        )
         
         return {
-            "semantic": semantic,
-            "calibration": calibration,
-            "block": semantic < 0.3,  # Block if too different
-            "warn": semantic < 0.7 and semantic >= 0.3
+            "semantic": result.semantic,
+            "calibration": result.calibration,
+            "block": result.block,
+            "warn": result.warn
         }
     
     async def _ensure_license(self) -> Dict[str, Any]:

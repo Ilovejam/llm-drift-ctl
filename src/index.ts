@@ -6,6 +6,7 @@
  */
 
 export { DriftGuard } from "./DriftGuard.js";
+export { OpenAIAdapter } from "./adapters/OpenAIAdapter.js";
 export type {
   UserLLM,
   DriftGuardConfig,

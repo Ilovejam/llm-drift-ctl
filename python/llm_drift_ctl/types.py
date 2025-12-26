@@ -44,6 +44,7 @@ class DriftGuardConfig:
     llm: Optional[UserLLM] = None
     cloud_endpoint: Optional[str] = None
     api_key: Optional[str] = None
+    content_requirements: Optional[str] = None  # Optional: Requirements/conditions for content validation
 
 
 @dataclass

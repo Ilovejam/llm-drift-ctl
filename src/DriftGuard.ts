@@ -14,6 +14,7 @@ import {
   normalizeOutput
 } from "./baseline.js";
 import { verifyLicense } from "./cloud.js";
+import { checkContentDrift } from "./content.js";
 
 /**
  * DriftGuard - Main class for LLM output validation
@@ -85,7 +86,7 @@ export class DriftGuard {
       if (modes.includes("CONTENT")) {
         result.scores.semantic = contentResult.semantic;
       }
-      if (modes.includes("CALIBRATION")) {
+      if (modes.includes("CALIBRATION") || modes.includes("CONTENT")) {
         result.scores.calibration = contentResult.calibration;
       }
 
@@ -174,19 +175,20 @@ export class DriftGuard {
       };
     }
 
-    // For MVP: simple comparison
-    // In production, this would use semantic similarity and score profile comparison
-    const currentFingerprint = generateSemanticFingerprint(json || text || "");
-    const baselineFingerprint = baseline.semanticFingerprint;
-
-    const semantic = currentFingerprint === baselineFingerprint ? 1.0 : 0.5;
-    const calibration = 0.8; // Placeholder for MVP
+    // Use LLM to check content drift
+    const currentOutput = json || text || "";
+    const result = await checkContentDrift(
+      llm,
+      baseline,
+      currentOutput,
+      this.config.contentRequirements // Optional requirements/conditions
+    );
 
     return {
-      semantic,
-      calibration,
-      block: semantic < 0.3, // Block if too different
-      warn: semantic < 0.7 && semantic >= 0.3
+      semantic: result.semantic,
+      calibration: result.calibration,
+      block: result.block,
+      warn: result.warn
     };
   }
 

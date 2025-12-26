@@ -20,6 +20,7 @@ export interface DriftGuardConfig {
   llm?: UserLLM;
   cloudEndpoint?: string;
   apiKey?: string;
+  contentRequirements?: string; // Optional: Requirements/conditions for content validation
 }
 
 /**

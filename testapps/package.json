@@ -1,0 +1,12 @@
+{
+  "name": "testapps",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node node.js"
+  },
+  "dependencies": {
+    "llm-drift-ctl": "file:../llm-drift-ctl-0.1.0.tgz"
+  }
+}
+
