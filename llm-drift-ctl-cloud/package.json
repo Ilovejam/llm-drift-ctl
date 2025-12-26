@@ -1,0 +1,21 @@
+{
+  "name": "llm-drift-ctl-cloud",
+  "version": "0.1.0",
+  "description": "Control plane API for llm-drift-ctl",
+  "type": "module",
+  "main": "app/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node app/main.js",
+    "dev": "tsx app/main.ts"
+  },
+  "dependencies": {
+    "fastify": "^4.27.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
+

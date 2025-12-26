@@ -1,0 +1,35 @@
+{
+  "name": "llm-drift-ctl",
+  "version": "0.1.0",
+  "description": "Production-grade LLM output validation package. Validates LLM outputs using your own LLM when needed — and no LLM when not.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "llm",
+    "validation",
+    "drift",
+    "quality",
+    "guard"
+  ],
+  "author": "",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.11",
+    "ts-jest": "^29.1.1"
+  }
+}
+
