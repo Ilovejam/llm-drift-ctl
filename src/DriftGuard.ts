@@ -68,19 +68,14 @@ export class DriftGuard {
       }
     }
 
-    // CONTENT/CALIBRATION mode checks (require LLM and license)
+    // CONTENT/CALIBRATION mode checks (require LLM)
     if (modes.includes("CONTENT") || modes.includes("CALIBRATION")) {
-      const license = await this.ensureLicense();
-      
-      if (!license.valid || !license.features?.includes("CONTENT")) {
-        throw new Error(
-          "CONTENT/CALIBRATION mode requires valid license with CONTENT feature"
-        );
-      }
-
       if (!this.config.llm) {
         throw new Error("CONTENT/CALIBRATION mode requires UserLLM to be provided");
       }
+
+      // If user provides their own LLM, no license check needed
+      // License is only for cloud services, not for user's own LLM usage
 
       const contentResult = await this.checkContent(json, text);
       if (modes.includes("CONTENT")) {

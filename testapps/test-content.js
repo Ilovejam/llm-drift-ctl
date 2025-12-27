@@ -16,12 +16,10 @@ async function test() {
     model: "gpt-4o-mini" // Default model
   });
 
-  // Create guard with OpenAI and cloud endpoint
+  // Create guard with OpenAI (no license key needed - user provides their own LLM)
   const guard = new DriftGuard({
     pipelineId: "test-content-pipeline",
     llm: openaiAdapter,
-    apiKey: "+905377870715",
-    cloudEndpoint: "https://llm-drift-ctl-cloud.fly.dev",
     contentRequirements: `This is a technical analysis output. 
 The output should contain:
 - Clear technical indicators

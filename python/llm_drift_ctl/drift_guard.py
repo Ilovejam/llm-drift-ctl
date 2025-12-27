@@ -18,7 +18,7 @@ from .types import (
     DriftLocation
 )
 from .format import check_json_format, parse_and_validate_json, FormatCheckResult
-from .baseline import baseline_store, normalize_output
+from .baseline import baseline_store, normalize_output, generate_semantic_fingerprint
 from .cloud import verify_license
 from .content import check_content_drift
 from datetime import datetime
@@ -84,17 +84,13 @@ class DriftGuard:
                 result.decision = "BLOCK"
                 result.severity = "HIGH"
         
-        # CONTENT/CALIBRATION mode checks (require LLM and license)
+        # CONTENT/CALIBRATION mode checks (require LLM)
         if "CONTENT" in modes or "CALIBRATION" in modes:
-            license_resp = await self._ensure_license()
-            
-            if not license_resp["valid"] or "CONTENT" not in license_resp.get("features", []):
-                raise ValueError(
-                    "CONTENT/CALIBRATION mode requires valid license with CONTENT feature"
-                )
-            
             if not self.config.llm:
                 raise ValueError("CONTENT/CALIBRATION mode requires UserLLM to be provided")
+            
+            # If user provides their own LLM, no license check needed
+            # License is only for cloud services, not for user's own LLM usage
             
             content_result = await self._check_content(json_data, text)
             if "CONTENT" in modes:

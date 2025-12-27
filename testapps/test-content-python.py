@@ -22,12 +22,10 @@ async def test():
         model="gpt-4o-mini"
     )
     
-    # Create guard with OpenAI and cloud endpoint
+    # Create guard with OpenAI (no license key needed - user provides their own LLM)
     guard = DriftGuard(DriftGuardConfig(
         pipeline_id="test-content-pipeline-python",
         llm=openai_adapter,
-        api_key="+905377870715",
-        cloud_endpoint="https://llm-drift-ctl-cloud.fly.dev",
         content_requirements="""This is a technical analysis output.
 The output should contain:
 - Clear technical indicators

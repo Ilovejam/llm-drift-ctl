@@ -1,0 +1,12 @@
+{
+  "name": "packagetest",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node test-node.js"
+  },
+  "dependencies": {
+    "@ilovejam/llm-drift-ctl": "^0.1.0"
+  }
+}
+
